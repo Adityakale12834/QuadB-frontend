@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import { useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteTodo, toggleComplete, updateTodo } from '../redux/slices/todoSlice'; // Adjust with your actual action imports
-import CardContent from '@mui/material/CardContent'; // Adjust the import based on your setup
+import { deleteTodo, toggleComplete, updateTodo } from '../redux/slices/todoSlice';
+import CardContent from '@mui/material/CardContent';
+import ClearIcon from '@mui/icons-material/Clear';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import CheckIcon from '@mui/icons-material/Check';
+import RemoveDoneIcon from '@mui/icons-material/RemoveDone';
 
 function TaskList() {
   const todos = useSelector(state => state.todos);
@@ -11,6 +15,7 @@ function TaskList() {
 
   const handleDelete = (id) => {
     dispatch(deleteTodo(id));
+    localStorage.removeItem(id);
   };
 
   const handleUpdate = () => {
@@ -21,18 +26,19 @@ function TaskList() {
   };
 
   const toggleReadStatus = (id) => {
-    dispatch(toggleComplete(id)); // Assuming toggleComplete accepts todo id
+    dispatch(toggleComplete(id));
   };
 
   return (
     <>
-      <ul className="overflow-y-scroll">
+      <ul className="overflow-y-scroll ">
         {todos.map((todo) => (
-          <li key={todo.id} className="bg-slate-600 w-[50vw] m-2">
+          <li key={todo.id} className="bg-slate-800 text-white font-medium w-full lg:w-[1000px] sm:w-[600px] max-w-full rounded-lg shadow-xl my-2" style={{background:!todo.read ? "#1e293b" :  "#075985"}} >
+
             <CardContent className="flex items-center justify-between">
-              <h1 className="w-auto">{todo.text}</h1>
+              <h1 className="w-full mx-4">{todo.text}</h1>
               <div className="flex gap-3">
-                <button className="btn btn-outline-danger" onClick={() => handleDelete(todo.id)}>delete</button>
+                <button className="btn btn-outline-danger" onClick={() => handleDelete(todo.id)}><ClearIcon/></button>
                 <button
                   className="btn btn-outline-success"
                   data-bs-toggle="modal"
@@ -42,17 +48,17 @@ function TaskList() {
                     setUpdate(todo.text);
                   }}
                 >
-                  update
+                  <EditNoteIcon/>
                 </button>
                 <button className="btn btn-outline-info" onClick={() => toggleReadStatus(todo.id)}>
-                  {todo.read ? 'Mark as unread' : 'Mark as read'}
+                  {todo.read ? <RemoveDoneIcon/> : <CheckIcon/>}
                 </button>
               </div>
               <div className="modal fade" id={`exampleModal${todo.id}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                   <div className="modal-content">
                     <div className='modal-header'>
-                      <h1>Update todo</h1>
+                      Update todo
                     </div>
                     <div className="modal-body">
                       <input
